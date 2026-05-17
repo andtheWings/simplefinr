@@ -1,0 +1,29 @@
+Package: simplefinr
+Type: Package
+Title: Query SimpleFIN Server APIs and Parse Financial Data
+Version: 0.1.0
+Authors@R: c(
+    person(
+      "Dan", "Riggi",
+      role = c("aut", "cre")
+    )
+  )
+Description: Provides tools for claiming SimpleFIN tokens, querying a
+    SimpleFIN server or bridge API, and parsing the JSON response into
+    flattened tibbles for accounts, transactions, connections, and errors.
+    Implements the SimpleFIN Protocol v2.0.
+License: MIT + file LICENSE
+URL: https://github.com/andtheWings/simplefinr
+BugReports: https://github.com/andtheWings/simplefinr/issues
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Imports:
+    dplyr,
+    httr2,
+    jsonlite,
+    tibble
+Suggests:
+    keyring,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0

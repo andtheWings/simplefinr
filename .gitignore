@@ -1,0 +1,15 @@
+# RStudio
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.positai
+
+# renv — keep the lockfile, ignore the installed library
+renv/library/
+renv/staging/
+renv/python/
+
+# R build artefacts
+*.tar.gz
+*.zip
