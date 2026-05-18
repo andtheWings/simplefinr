@@ -1,8 +1,4 @@
-------------------------------------------------------------------------
-
-editor_options: markdown: wrap: 72 ---
-
-<img src="simplefinr_hex.png" align="right" width="150"/>
+<img src="simplefinr_hex.png" width="150"/>
 
 # simplefinr
 
