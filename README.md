@@ -123,6 +123,8 @@ result$transactions |>
 
 MIT © 2026 Daniel Riggins. See [LICENSE.md](LICENSE.md) for details.
 
+Made in collaboration with Posit's [RStudio AI assistant](https://posit.co/blog/introducing-ai-in-rstudio). 
+
 Hex badge designed in collaboration with Gemini (Google AI), mixing the R logo concept with the original SimpleFIN fin aesthetic.
 
 ## Related
