@@ -188,3 +188,50 @@ test_that("sfin_transactions accepts key and resolves to access_url", {
   )
   expect_s3_class(result, "tbl_df")
 })
+
+# --- keyring thin wrappers (verify they delegate correctly) ---
+
+test_that("keyring_key_set delegates to keyring::key_set_with_value", {
+  local_mocked_bindings(
+    `key_set_with_value` = function(service, username, password, ...) {
+      recorded <<- list(service = service, username = username, password = password)
+    },
+    .package = "keyring"
+  )
+  keyring_key_set("srv", "usr", "pwd")
+  expect_equal(recorded$service, "srv")
+  expect_equal(recorded$username, "usr")
+  expect_equal(recorded$password, "pwd")
+})
+
+test_that("keyring_key_get delegates to keyring::key_get", {
+  local_mocked_bindings(
+    `key_get` = function(service, username, ...) paste0(service, ":", username),
+    .package = "keyring"
+  )
+  expect_equal(keyring_key_get("srv", "usr"), "srv:usr")
+})
+
+test_that("keyring_key_delete delegates to keyring::key_delete", {
+  local_mocked_bindings(
+    `key_delete` = function(service, username, ...) {
+      recorded <<- list(service = service, username = username)
+    },
+    .package = "keyring"
+  )
+  keyring_key_delete("srv", "usr")
+  expect_equal(recorded$service, "srv")
+  expect_equal(recorded$username, "usr")
+})
+
+test_that("keyring_key_list delegates to keyring::key_list", {
+  local_mocked_bindings(
+    `key_list` = function(service, ...) {
+      recorded <<- service
+      data.frame(username = "test", stringsAsFactors = FALSE)
+    },
+    .package = "keyring"
+  )
+  keyring_key_list("srv")
+  expect_equal(recorded, "srv")
+})

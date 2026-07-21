@@ -155,6 +155,20 @@ test_that("sfin_accounts warns when the server returns errors", {
   )
 })
 
+test_that("sfin_accounts warns with plural 'errors' for multiple errors", {
+  errlist <- list(
+    list(code = "con.auth", msg = "Auth failed", conn_id = "CON-001"),
+    list(code = "acct.notfound", msg = "Account missing", conn_id = "CON-001",
+         account_id = "ACT-999")
+  )
+  mock_fn <- \(req) json_response(account_set_json(errlist = errlist))
+
+  expect_warning(
+    httr2::with_mocked_responses(mock_fn, sfin_accounts(demo_access_url)),
+    regexp = "2 error"
+  )
+})
+
 test_that("sfin_accounts returns structured errors in the errors tibble", {
   errlist <- list(list(code = "con.auth", msg = "Authentication failed", conn_id = "CON-999"))
   mock_fn <- \(req) json_response(account_set_json(errlist = errlist))
@@ -180,6 +194,88 @@ test_that("sfin_accounts stops on HTTP 403", {
 
 test_that("sfin_accounts stops on HTTP 402", {
   mock_fn <- \(req) json_response("{}", status = 402L)
+
+  expect_snapshot(
+    error = TRUE,
+    httr2::with_mocked_responses(mock_fn, sfin_accounts(demo_access_url))
+  )
+})
+
+test_that("sfin_accounts issues end-date query param as unix timestamp", {
+  captured_req <- NULL
+  mock_fn <- function(req) {
+    captured_req <<- req
+    json_response(account_set_json())
+  }
+
+  httr2::with_mocked_responses(
+    mock_fn,
+    sfin_accounts(demo_access_url, end_date = as.Date("2024-06-01"))
+  )
+
+  expect_match(captured_req$url, "end-date=")
+})
+
+test_that("sfin_accounts issues pending=1 query param when pending is TRUE", {
+  captured_req <- NULL
+  mock_fn <- function(req) {
+    captured_req <<- req
+    json_response(account_set_json())
+  }
+
+  httr2::with_mocked_responses(
+    mock_fn,
+    sfin_accounts(demo_access_url, pending = TRUE)
+  )
+
+  expect_match(captured_req$url, "pending=1")
+})
+
+test_that("sfin_accounts does not send pending param when pending is FALSE", {
+  captured_req <- NULL
+  mock_fn <- function(req) {
+    captured_req <<- req
+    json_response(account_set_json())
+  }
+
+  httr2::with_mocked_responses(mock_fn, sfin_accounts(demo_access_url))
+
+  expect_false(grepl("pending=", captured_req$url))
+})
+
+test_that("sfin_accounts sends account query param for single account id", {
+  captured_req <- NULL
+  mock_fn <- function(req) {
+    captured_req <<- req
+    json_response(account_set_json())
+  }
+
+  httr2::with_mocked_responses(
+    mock_fn,
+    sfin_accounts(demo_access_url, account = c("ACT-001"))
+  )
+
+  expect_match(captured_req$url, "account=ACT-001")
+})
+
+test_that("sfin_accounts sends account query params for multiple account ids", {
+  captured_req <- NULL
+  mock_fn <- function(req) {
+    captured_req <<- req
+    json_response(account_set_json())
+  }
+
+  httr2::with_mocked_responses(
+    mock_fn,
+    sfin_accounts(demo_access_url, account = c("ACT-001", "ACT-002"))
+  )
+
+  expect_match(captured_req$url, "account=ACT-001")
+  expect_match(captured_req$url, "account=ACT-002")
+})
+
+test_that("sfin_accounts stops on unexpected HTTP status", {
+  mock_fn <- \(req) json_response("{}", status = 500L)
 
   expect_snapshot(
     error = TRUE,

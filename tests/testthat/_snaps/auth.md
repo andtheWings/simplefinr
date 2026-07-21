@@ -22,3 +22,12 @@
       Error in `parse_access_url()`:
       ! Could not parse the Access URL. Expected format: https://username:password@host/path
 
+# sfin_claim_token errors on unexpected HTTP status
+
+    Code
+      httr2::with_mocked_responses(function(req) httr2::response(status_code = 500L),
+      sfin_claim_token(token))
+    Condition
+      Error in `sfin_claim_token()`:
+      ! Unexpected HTTP 500 response while claiming the token.
+

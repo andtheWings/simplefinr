@@ -21,6 +21,7 @@ Imports:
     dplyr,
     httr2,
     jsonlite,
+    rlang,
     tibble
 Suggests:
     keyring,

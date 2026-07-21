@@ -93,9 +93,8 @@ sfin_accounts <- function(
     req <- httr2::req_url_query(req, pending = "1")
   }
   if (!is.null(account)) {
-    for (acct_id in account) {
-      req <- httr2::req_url_query(req, account = acct_id)
-    }
+    params <- rlang::set_names(as.list(account), rep("account", length(account)))
+    req <- httr2::req_url_query(req, !!!params)
   }
   if (isTRUE(balances_only)) {
     req <- httr2::req_url_query(req, `balances-only` = "1")

@@ -18,3 +18,33 @@ test_that("parse_access_url extracts credentials correctly", {
 test_that("parse_access_url errors on malformed URL", {
   expect_snapshot(error = TRUE, parse_access_url("https://no-credentials-here.com/path"))
 })
+
+test_that("sfin_claim_token returns access URL on successful claim", {
+  claim_url <- "https://bridge.simplefin.org/simplefin/claim/demo"
+  token <- jsonlite::base64_enc(charToRaw(claim_url))
+  returned_url <- "https://user:pass@bridge.simplefin.org/simplefin"
+
+  httr2::with_mocked_responses(
+    \(req) httr2::response(
+      status_code = 200L,
+      body = charToRaw(returned_url)
+    ),
+    {
+      result <- sfin_claim_token(token)
+      expect_equal(result, returned_url)
+    }
+  )
+})
+
+test_that("sfin_claim_token errors on unexpected HTTP status", {
+  claim_url <- "https://bridge.simplefin.org/simplefin/claim/demo"
+  token <- jsonlite::base64_enc(charToRaw(claim_url))
+
+  expect_snapshot(
+    error = TRUE,
+    httr2::with_mocked_responses(
+      \(req) httr2::response(status_code = 500L),
+      sfin_claim_token(token)
+    )
+  )
+})

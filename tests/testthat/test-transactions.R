@@ -163,3 +163,48 @@ test_that("sfin_transactions does not send balances-only param", {
 
   expect_false(grepl("balances-only", captured_req$url))
 })
+
+test_that("sfin_transactions forwards end_date to the underlying request", {
+  captured_req <- NULL
+  mock_fn <- function(req) {
+    captured_req <<- req
+    json_response_txn(account_set_json_txn())
+  }
+
+  httr2::with_mocked_responses(
+    mock_fn,
+    sfin_transactions(demo_url, end_date = as.Date("2024-12-31"))
+  )
+
+  expect_match(captured_req$url, "end-date=")
+})
+
+test_that("sfin_transactions forwards pending to the underlying request", {
+  captured_req <- NULL
+  mock_fn <- function(req) {
+    captured_req <<- req
+    json_response_txn(account_set_json_txn())
+  }
+
+  httr2::with_mocked_responses(
+    mock_fn,
+    sfin_transactions(demo_url, pending = TRUE)
+  )
+
+  expect_match(captured_req$url, "pending=1")
+})
+
+test_that("sfin_transactions forwards account filter to the underlying request", {
+  captured_req <- NULL
+  mock_fn <- function(req) {
+    captured_req <<- req
+    json_response_txn(account_set_json_txn())
+  }
+
+  httr2::with_mocked_responses(
+    mock_fn,
+    sfin_transactions(demo_url, account = c("ACT-001"))
+  )
+
+  expect_match(captured_req$url, "account=ACT-001")
+})

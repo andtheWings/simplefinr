@@ -14,3 +14,11 @@
       Error in `sfin_accounts()`:
       ! HTTP 402: Payment required to access this SimpleFIN server.
 
+# sfin_accounts stops on unexpected HTTP status
+
+    Code
+      httr2::with_mocked_responses(mock_fn, sfin_accounts(demo_access_url))
+    Condition
+      Error in `sfin_accounts()`:
+      ! Unexpected HTTP 500 response from the SimpleFIN server.
+
